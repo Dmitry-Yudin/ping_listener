@@ -1,0 +1,16 @@
+import socket
+import struct
+
+# Create a raw socket and bind it to the IP address of the local machine
+sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
+sock.bind(("localhost", 0))
+
+while True:
+    # Receive a packet from the socket
+    packet, addr = sock.recvfrom(1024)
+    # Extract the IP address of the pinging host from the packet
+    ip_header = packet[:20]
+    iph = struct.unpack('!BBHHHBBH4s4s', ip_header)
+    pinger_ip = socket.inet_ntoa(iph[8])
+    # Print the IP address of the pinging host
+    print("The local machine was pinged by {}".format(pinger_ip))
